@@ -1,5 +1,5 @@
---- quirks.c.orig	2024-12-23 12:38:55.135569427 +0100
-+++ quirks.c.patched	2024-12-23 12:41:02.645563241 +0100
+--- quirks.c	2024-12-23 12:38:55.135569427 +0100
++++ quirks.c	2024-12-23 12:41:02.645563241 +0100
 @@ -2527,7 +2527,9 @@
   * upstream PCIe root port when ASPM is enabled. At least L0s mode is affected;
   * disable both L0s and L1 for now to be safe.
