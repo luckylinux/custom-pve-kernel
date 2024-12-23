@@ -35,8 +35,25 @@ make submodule
 git submodule foreach git fetch --tags
 git submodule update --init
 
+# Does NOT work
+# sed -Ei "s|PACKAGE=proxmox-kernel-\$\(KVNAME\)|PACKAGE=proxmox-kernel-${CUSTOM_SUFFIX}-\$\(KVNAME\)|" Makefile
+# sed -Ei "s|HDRPACKAGE=proxmox-headers-\$\(KVNAME\)|HDRPACKAGE=proxmox-headers-${CUSTOM_SUFFIX}-\$\(KVNAME\)|" Makefile
+# sed -Ei "s|BUILD_DIR=proxmox-kernel-\$\(KERNEL_VER\)|BUILD_DIR=proxmox-kernel-${CUSTOM_SUFFIX}-\$\(KERNEL_VER\)|" Makefile
+
+# Will not work if we already ran the String Replacement ...
+# sed -Ei 's|PACKAGE=proxmox-kernel-\$\(KVNAME\)|PACKAGE=proxmox-kernel-${CUSTOM_SUFFIX}-$(KVNAME)|' Makefile
+# sed -Ei 's|HDRPACKAGE=proxmox-headers-\$\(KVNAME\)|HDRPACKAGE=proxmox-headers-${CUSTOM_SUFFIX}-$(KVNAME)|' Makefile
+# sed -Ei 's|BUILD_DIR=proxmox-kernel-\$\(KERNEL_VER\)|BUILD_DIR=proxmox-kernel-${CUSTOM_SUFFIX}-$(KERNEL_VER)|' Makefile
+
+# Will not work if we already ran the String Replacement ...
+sed -Ei "s|PACKAGE=proxmox-kernel-(.+)$|PACKAGE=proxmox-kernel-${CUSTOM_SUFFIX}-\$(KVNAME)|" Makefile
+sed -Ei "s|HDRPACKAGE=proxmox-headers-(.+)$|HDRPACKAGE=proxmox-headers-${CUSTOM_SUFFIX}-\$(KVNAME)|" Makefile
+sed -Ei "s|BUILD_DIR=proxmox-kernel-(.+)$|BUILD_DIR=proxmox-kernel-${CUSTOM_SUFFIX}-\$(KERNEL_VER)|" Makefile
+
+
 # Configure Custom Suffix
-./scripts/config --file "$configfile" --set-str CONFIG_LOCALVERSION "${CUSTOM_SUFFIX}"
+# scripts/config is in submodules/ubuntu-kernel/
+# ./scripts/config --file "./config" --set-str CONFIG_LOCALVERSION "${CUSTOM_SUFFIX}"
 
 ## (ex: ZFS_SHA1=zfs-2.2.0 and KERNEL_SHA1=cod/mainline/v6.5.7)
 ZFS_SHA1=
