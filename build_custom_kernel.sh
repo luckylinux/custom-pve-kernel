@@ -50,6 +50,12 @@ sed -Ei "s|PACKAGE=proxmox-kernel-(.+)$|PACKAGE=proxmox-kernel-${CUSTOM_SUFFIX}-
 sed -Ei "s|HDRPACKAGE=proxmox-headers-(.+)$|HDRPACKAGE=proxmox-headers-${CUSTOM_SUFFIX}-\$(KVNAME)|" Makefile
 sed -Ei "s|BUILD_DIR=proxmox-kernel-(.+)$|BUILD_DIR=proxmox-kernel-${CUSTOM_SUFFIX}-\$(KERNEL_VER)|" Makefile
 
+# Copy Patches to Proxmox Patches Folder
+for patch in ../patches/*.patch; do
+    patchfilename=$(basename $patch)
+    echo "Copy ../patches/${patchfilename} -> ./patches/kernel/${patchfilename}"
+    cp ../patches/${patchfilename} patches/kernel/${patchfilename}
+done
 
 # Configure Custom Suffix
 # scripts/config is in submodules/ubuntu-kernel/
