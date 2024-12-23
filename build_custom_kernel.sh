@@ -5,7 +5,10 @@ relativepath="./" # Define relative path to go from this script to the root leve
 if [[ ! -v toolpath ]]; then scriptpath=$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd ); toolpath=$(realpath --canonicalize-missing $scriptpath/$relativepath); fi
 
 # Abort on Error
-set -e
+# set -e
+
+# Enable Verbose Debugging
+set -x
 
 # Define Custom Suffix
 CUSTOM_SUFFIX="patched"
@@ -19,16 +22,28 @@ proxmox_kernel_use_git="yes"
 # Install Requirements for building Kernel from Source
 # apt-get update
 # apt-get install -y build-essential git git-email debhelper pve-doc-generator devscripts python-is-python3 dh-python sphinx-common quilt libunwind-dev libzstd-dev pkg-config equivs
+# apt-get install -y dh-python flex bison
+# apt-get install --no-install-recommends -y asciidoc-base dwarves libdw-dev libiberty-dev libnuma-dev libslang2-dev lz4 xmlto
+
+# DISABLED
+# This pulls in a LOT of Dependencies including X11 and openjdk-17-jre
+# Maybe better to use --no-install-recommends
+# apt-get install --no-install-recommends pve-doc-generator
 
 # Clone Git Repository
-if [[ ! -d "./.git" ]]
+if [ ! -d "./pve-kernel" ] && [ ! -d "./pve-kernel/.git" ]
 then
     git clone https://git.proxmox.com/git/pve-kernel.git
-else
-    git pull
 fi
 
-cd pve-kernel
+# Change Folder
+cd pve-kernel || exit
+
+# Update Git Repository
+git pull
+
+# Checkout required Branch
+git checkout "${proxmox_kernel_original_branch}"
 
 # Initialize / Update Submodules
 make submodule
@@ -60,6 +75,11 @@ done
 # Configure Custom Suffix
 # scripts/config is in submodules/ubuntu-kernel/
 # ./scripts/config --file "./config" --set-str CONFIG_LOCALVERSION "${CUSTOM_SUFFIX}"
+
+# Clean Build Directory
+make clean
+# make distclean
+
 
 ## (ex: ZFS_SHA1=zfs-2.2.0 and KERNEL_SHA1=cod/mainline/v6.5.7)
 ZFS_SHA1=
